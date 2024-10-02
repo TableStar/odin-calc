@@ -86,6 +86,10 @@ const handleCalculate = () => {
   operator = "";
 };
 
+const handlePercentageButton = () => {
+  let result = displayValue/100
+  setDisplayValue(result)
+}
 const clearButton = document.querySelector("#clear");
 clearButton.addEventListener("click", () => {
   handleClearButton();
@@ -114,3 +118,9 @@ equalButton.addEventListener("click", () => {
     handleCalculate();
   }
 });
+
+const percentageButton = document.querySelector("#percentage")
+percentageButton.addEventListener("click",() => {
+  handlePercentageButton()
+})
+
