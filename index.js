@@ -6,13 +6,17 @@ let displayValue = 0;
 const getDisplayValue = () => displayValue;
 
 const setDisplayValue = (value) => {
-  displayValue = !isNaN(value)? value:"FOOLS!";
+  displayValue = !isNaN(value) ? value : "FOOLS!";
   updateDisplay();
 };
 
 const updateDisplay = () => {
   const display = document.querySelector("#displayValue");
-  display.textContent = displayValue;
+  if (displayValue.toString().includes("")) {
+    display.textContent = displayValue;
+  } else {
+    display.textContent = formatNumber(displayValue);
+  }
 };
 
 const add = (a, b) => {
@@ -57,10 +61,33 @@ const handleClearButton = () => {
   setDisplayValue(0);
 };
 
+const toScientificNotation = (num, precision = 4) => {
+  num = Number(num);
+  if (num === 0) return "0";
+  const exponent = Math.floor(Math.log10(Math.abs(num)));
+  const mantissa = num / Math.pow(10, exponent);
+  const roundedMantissa = mantissa.toFixed(precision);
+  return `${roundedMantissa}e${exponent >= 0 ? "+" : ""}${exponent}`;
+};
+
+const formatNumber = (num, precision = 4) => {
+  num = Number(num);
+  if (num === 0) return "0";
+
+  const absNum = Math.abs(num);
+  if (absNum < 0.0001 || absNum >= 10000000) {
+    return toScientificNotation(num, precision);
+  } else {
+    return num.toFixed(precision).replace(/\.?0+$/, "");
+  }
+};
+
 const handleNumberInput = (num) => {
   if (displayValue == 0) {
     displayValue = num;
-  } else if (displayValue < 10000000) {
+  } else if (displayValue.toString().includes(".")) {
+    displayValue = displayValue + num;
+  } else if (displayValue < 1000000000000) {
     displayValue = displayValue * 10 + num;
   }
   updateDisplay();
@@ -87,9 +114,20 @@ const handleCalculate = () => {
 };
 
 const handlePercentageButton = () => {
-  let result = displayValue/100
-  setDisplayValue(result)
-}
+  let result = displayValue / 100;
+  console.log(result);
+
+  setDisplayValue(result);
+};
+
+const handleDecimalButton = () => {
+  if (!displayValue.toString().includes(".")) {
+    displayValue = displayValue + ".";
+  }
+  console.log(displayValue);
+  updateDisplay();
+};
+
 const clearButton = document.querySelector("#clear");
 clearButton.addEventListener("click", () => {
   handleClearButton();
@@ -119,8 +157,12 @@ equalButton.addEventListener("click", () => {
   }
 });
 
-const percentageButton = document.querySelector("#percentage")
-percentageButton.addEventListener("click",() => {
-  handlePercentageButton()
-})
+const percentageButton = document.querySelector("#percentage");
+percentageButton.addEventListener("click", () => {
+  handlePercentageButton();
+});
 
+const decimalButton = document.querySelector("#decimal");
+decimalButton.addEventListener("click", () => {
+  handleDecimalButton();
+});
